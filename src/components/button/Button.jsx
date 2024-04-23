@@ -1,10 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import "./button.css"
+import { shallow } from 'zustand/shallow';
+import { useStore } from '../../store';
+
+const selector = (store) => ({
+
+  isRunning: store.isRunning,
+  toggleButton: store.toggleButton,
+});
 const Button = () => {
+  const { isRunning, toggleButton} = useStore(selector, shallow);
+  useEffect(()=>{
+
+  },[isRunning])
   return (
     <>
    <div className="toggle-container">
-  <input className="toggle-input" type="checkbox"/>
+  <input className="toggle-input" type="checkbox" onClick={toggleButton}/>
   <div className="toggle-handle-wrapper">
     <div className="toggle-handle">
       <div className="toggle-handle-knob"></div>

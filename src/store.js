@@ -1,28 +1,36 @@
 import { applyNodeChanges, applyEdgeChanges } from 'reactflow';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware'
 import {
   isRunning,
-  toggleAudio,
-  createAudioNode,
-  updateAudioNode,
-  removeAudioNode,
+  toggleButton,
+  createNode,
+  updateNode,
+  removeNode,
   connect,
-  disconnect,
+  // disconnect,
 } from './createNodes';
+export const useCSVDataStore = create(
+  persist(
+    (set, get) => ({
+      jsonData: [],
+      setJSONData: (jsonData) => set({ jsonData: jsonData }),
+    }),
+    {
+      name: 'json-storage', // name of the item in the storage (must be unique)
+    },
+  ),
+)
 
-export const useCSVDataStore =create((set) => ({
-  jsonData: [],
-  setJSONData: (data) => set({ jsonData: data }),
-}));
 
 export const useStore = create((set, get) => ({
   nodes: [{ id: 'output', type: 'out', position: { x: 0, y: 0 } }],
   edges: [],
   isRunning: isRunning(),
 
-  toggleAudio() {
-    toggleAudio().then(() => {
+  toggleButton() {
+    toggleButton().then(() => {
       set({ isRunning: isRunning() });
     });
   },
@@ -35,33 +43,23 @@ export const useStore = create((set, get) => ({
 
   createNode(type, x, y) {
     const id = nanoid();
-
+    const jsonData = localStorage.getItem("json-storage");
     switch (type) {
-      case 'osc': {
-        const data = { frequency: 440, type: 'sine' };
-        const position = { x: 0, y: 0 };
-
-        createAudioNode(id, type, data);
-        set({ nodes: [...get().nodes, { id, type, data, position }] });
-
-        break;
-      }
 
       case 'filter': {
-        const data = { gain: 0.5 };
+        const data = { JSONDATA:jsonData,  type: '' };
         const position = { x: 0, y: 0 };
-
-        createAudioNode(id, type, data);
+        createNode(id, type, data);
         set({ nodes: [...get().nodes, { id, type, data, position }] });
 
         break;
       }
 
       case 'delay': {
-        const data = { gain: 0.5 };
+        const data = { delay: 5000 };
         const position = { x: 0, y: 0 };
 
-        createAudioNode(id, type, data);
+        createNode(id, type, data);
         set({ nodes: [...get().nodes, { id, type, data, position }] });
 
         break;
@@ -71,17 +69,17 @@ export const useStore = create((set, get) => ({
         const data = { gain: 0.5 };
         const position = { x: 0, y: 0 };
 
-        createAudioNode(id, type, data);
+        createNode(id, type, data);
         set({ nodes: [...get().nodes, { id, type, data, position }] });
 
         break;
       }
 
       case 'send': {
-        const data = { gain: 0.5 };
+        const data = { JSONDATA: jsonData };
         const position = { x: 0, y: 0 };
 
-        createAudioNode(id, type, data);
+        createNode(id, type, data);
         set({ nodes: [...get().nodes, { id, type, data, position }] });
 
         break;
@@ -90,7 +88,7 @@ export const useStore = create((set, get) => ({
   },
 
   updateNode(id, data) {
-    updateAudioNode(id, data);
+    updateNode(id, data);
     set({
       nodes: get().nodes.map((node) =>
         node.id === id ? { ...node, data: Object.assign(node.data, data) } : node
@@ -100,7 +98,7 @@ export const useStore = create((set, get) => ({
 
   onNodesDelete(deleted) {
     for (const { id } of deleted) {
-      removeAudioNode(id);
+      removeNode(id);
     }
   },
 

@@ -5,11 +5,11 @@ import { useStore } from '../../store';
 import { useCSVDataStore } from '../../store'
 
 const selector = (id) => (store) => ({
-  setGain: (e) => store.updateNode(id, { gain: +e.target.value }),
+  setType: (e) => store.updateNode(id, { type: e.target.value }),
 });
 
 const Filter = ({ id, data })=> {
-  const { setGain } = useStore(selector(id), shallow);
+  const { setType } = useStore(selector(id), shallow);
   const {jsonData} = useCSVDataStore();
   return (
     <>
@@ -20,7 +20,7 @@ const Filter = ({ id, data })=> {
             <h1>Data Available</h1> :
             <h1>Data is Empty</h1>
           }
-      <select className="nodrag"  >
+      <select className="nodrag" value={data.type} onChange={setType} >
       {jsonData && jsonData[0] && Object.keys(jsonData[0])?.map((i)=>(
               <option value={i}>{i}</option>
             ))}

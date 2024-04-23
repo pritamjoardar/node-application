@@ -31,8 +31,6 @@ const selector = (store) => ({
   addDelay: () => store.createNode('delay'),
   addFormat: () => store.createNode('format'),
   addSend: () => store.createNode('send'),
-
-
 });
 
 export default function App() {
