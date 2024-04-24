@@ -20,3 +20,6 @@ case 'osc': {
 
     break;
   }
+
+context.suspend();
+nodes.set('output', context.destination);

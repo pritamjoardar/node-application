@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Handle } from 'reactflow';
 import { shallow } from 'zustand/shallow';
 import { useStore } from '../../store';
 import { useCSVDataStore } from '../../store'
 
 const selector = (id) => (store) => ({
-  setType: (e) => store.updateNode(id, { type: e.target.value }),
+  setType: (e) => store.updateNode(id, { type: e.target.value}),
 });
 
 const Filter = ({ id, data })=> {
   const { setType } = useStore(selector(id), shallow);
   const {jsonData} = useCSVDataStore();
+
   return (
     <>
-      <div className='rounded-md bg-white border border-primary shadow-xl'>
+      <div className='rounded-md bg-white border overflow-hidden border-primary shadow-xl'>
       <div className='bg-primary text-white font-bold p-2'>Filter Data</div>
       <div className=" p-2 flex justify-center flex-col">
       {jsonData && jsonData.length > 0 ?

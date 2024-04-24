@@ -1,6 +1,7 @@
 import axios from "axios";
+
+let isRunning = false;
 const nodes = new Map();
-const context = new AudioContext();
 class Node {
   constructor(id, type, data) {
     this.id = id;
@@ -13,26 +14,31 @@ class Node {
   }
 }
 
-context.suspend();
-nodes.set('output', context.destination);
-
-export function isRunning() {
-  return context.state === 'running';
+export function checkIsRunning() {
+  return isRunning;
 }
 
 export function toggleButton() {
-  return isRunning() ? context.suspend() : context.resume();
+  isRunning = !isRunning;
+  return new Promise((resolve) => {
+    resolve(isRunning);
+  });
 }
 
+export function excute(){
+  for (const node of nodes.values()) {
+    console.log("nodevalue"+JSON.stringify(node));
+  }
+}
 export function createNode(id, type, data) {
   switch (type) {
-    
+
     case 'filter': {
-      const node = new Node(id,type);
-      node.data = JSON.parse(data.JSONDATA); 
-      node.type = data.type; 
-      if (data.type && node.data[data.type]) {
-        node.data[data.type] = node.data[data.type].toLowerCase();
+      let node = new Node(id);
+      let Data = JSON.parse(data.JSONDATA).state.jsonData;
+      node.type = data.type;
+      if(data.type){
+        node.data = Data.map(item => item[data.type].toLowerCase());
       }
       nodes.set(id, node);
       break;
@@ -77,15 +83,21 @@ export function createNode(id, type, data) {
 
 export function updateNode(id, data) {
   const node = nodes.get(id);
-
   for (const [key, val] of Object.entries(data)) {
-    if (node[key] instanceof Node) {
-      node[key].value = val;
-    } else {
-      node[key] = val;
-    }
+    node[key] = val;
   }
+  
 }
+// export function updateNode(id, data) {
+//   const node = nodes.get(id);
+//   for (const [key, val] of Object.entries(data)) {
+//     if (node[key] instanceof Node) {
+//       node[key].value = val;
+//     } else {
+//       node[key] = val;
+//     }
+//   }
+// }
 
 export function removeNode(id) {
   const node = nodes.get(id);
@@ -103,6 +115,6 @@ export function connect(sourceId, targetId) {
 export function disconnect(sourceId, targetId) {
   const source = nodes.get(sourceId);
   const target = nodes.get(targetId);
-
   source.disconnect(target);
 }
+

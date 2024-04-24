@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import "./button.css"
 import { shallow } from 'zustand/shallow';
 import { useStore } from '../../store';
@@ -10,9 +10,7 @@ const selector = (store) => ({
 });
 const Button = () => {
   const { isRunning, toggleButton} = useStore(selector, shallow);
-  useEffect(()=>{
 
-  },[isRunning])
   return (
     <>
    <div className="toggle-container">

@@ -3,12 +3,13 @@ import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware'
 import {
-  isRunning,
+  checkIsRunning,
   toggleButton,
   createNode,
   updateNode,
   removeNode,
   connect,
+  excute,
   // disconnect,
 } from './createNodes';
 export const useCSVDataStore = create(
@@ -23,15 +24,29 @@ export const useCSVDataStore = create(
   ),
 )
 
+export const useTypeStore = create(
+  persist(
+    (set, get) => ({
+      type: "",
+      setType: (type) => set({ type: type }),
+    }),
+    {
+      name: 'type-storage', // name of the item in the storage (must be unique)
+    },
+  ),
+)
 
 export const useStore = create((set, get) => ({
   nodes: [{ id: 'output', type: 'out', position: { x: 0, y: 0 } }],
   edges: [],
-  isRunning: isRunning(),
+  isRunning: checkIsRunning(),
 
   toggleButton() {
-    toggleButton().then(() => {
-      set({ isRunning: isRunning() });
+    toggleButton().then((isRunning) => {
+      set({ isRunning: checkIsRunning() });
+      if(isRunning) {
+        excute();
+      }
     });
   },
 
@@ -47,7 +62,7 @@ export const useStore = create((set, get) => ({
     switch (type) {
 
       case 'filter': {
-        const data = { JSONDATA:jsonData,  type: '' };
+        const data = { JSONDATA:jsonData,  type: "" };
         const position = { x: 0, y: 0 };
         createNode(id, type, data);
         set({ nodes: [...get().nodes, { id, type, data, position }] });
