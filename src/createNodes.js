@@ -25,48 +25,59 @@ export function toggleButton() {
   });
 }
 
-export function excute(){
+// export function excute(){
+//   for (const node of nodes.values()) {
+//     console.log("nodevalue"+JSON.stringify(node));
+//   }
+// }
+
+export function excute() {
   for (const node of nodes.values()) {
-    console.log("nodevalue"+JSON.stringify(node));
+    console.log(`Node ID: ${node.id}, Type: ${node.type}, Data: ${node?.data}`);
   }
 }
+
+function updateFilterData(filterNode,Data) {
+  if (filterNode.type) {
+    filterNode.data = Data.map(item => item[filterNode.type].toLowerCase());
+  }
+}
+
 export function createNode(id, type, data) {
   switch (type) {
 
     case 'filter': {
-      let node = new Node(id);
+      let filternode = new Node(id);
       let Data = JSON.parse(data.JSONDATA).state.jsonData;
-      node.type = data.type;
-      if(data.type){
-        node.data = Data.map(item => item[data.type].toLowerCase());
-      }
-      nodes.set(id, node);
+      filternode.type = data.type;
+      updateFilterData(filternode,Data)
+      nodes.set(id, filternode);
       break;
     }
 
     case 'delay': {
-      const node = new Node(id,type);
-      node.data = data.delay;
+      const delaynode = new Node(id,type);
+      delaynode.data = data.delay;
       setTimeout(() => {
-        nodes.set(id, node);
+        nodes.set(id, delaynode);
       },[data.delay]);
       break;
     }
 
     case 'format': {
-      const node = new Node(id,type);
-      node.data = data.JSONDATA;
-      nodes.set(id, node);
+      const formatnode = new Node(id,type);
+      formatnode.data = data.JSONDATA;
+      nodes.set(id, formatnode);
       break;
     }
 
     case 'send': {
-      const node = new Node(id,type);
-      node.data = JSON.parse(data.JSONDATA);
-      nodes.set(id, node);
+      const sendnode = new Node(id,type);
+      sendnode.data = JSON.parse(data.JSONDATA);
+      nodes.set(id, sendnode);
       // Send a POST request to requestcatcher.com
       const sendRequest = async() =>{
-      await  axios.post('https://sendnodetestingdata.requestcatcher.com/test', node.data)
+      await  axios.post('https://sendnodetestingdata.requestcatcher.com/test', sendnode.data)
         .then(response => {
           console.log(response.data);
         })
@@ -86,8 +97,8 @@ export function updateNode(id, data) {
   for (const [key, val] of Object.entries(data)) {
     node[key] = val;
   }
-  
 }
+
 // export function updateNode(id, data) {
 //   const node = nodes.get(id);
 //   for (const [key, val] of Object.entries(data)) {
