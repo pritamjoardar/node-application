@@ -62,11 +62,14 @@ export const useStore = create((set, get) => ({
     switch (type) {
 
       case 'filter': {
-        const data = { JSONDATA:jsonData,  type: "" };
-        const position = { x: 0, y: 0 };
-        createNode(id, type, data);
-        set({ nodes: [...get().nodes, { id, type, data, position }] });
-
+        try {
+          const data = { JSONDATA: jsonData, type: "" };
+          const position = { x: 0, y: 0 };
+          createNode(id, type, data);
+          set({ nodes: [...get().nodes, { id, type, data, position }] });
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
         break;
       }
 

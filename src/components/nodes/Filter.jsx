@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useState, useEffect} from 'react';
 import { Handle } from 'reactflow';
 import { shallow } from 'zustand/shallow';
 import { useStore } from '../../store';
@@ -10,8 +10,17 @@ const selector = (id) => (store) => ({
 
 const Filter = ({ id, data })=> {
   const { setType } = useStore(selector(id), shallow);
-  const {jsonData} = useCSVDataStore();
+  const { jsonData } = useCSVDataStore();
 
+  // State to manage the default type (optional)
+  const [defaultType, setDefaultType] = useState('');
+
+  useEffect(() => {
+    if (jsonData && jsonData.length > 0) {
+      const firstKey = Object.keys(jsonData[0])[0];
+      setDefaultType(firstKey); // Set the first key as the default value
+    }
+  },[]);
   return (
     <>
       <div className='rounded-md bg-white border overflow-hidden border-primary shadow-xl'>
